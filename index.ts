@@ -99,10 +99,12 @@ export class cqsocket {
     public listen(port: number, callback?: (socket: cqsocket) => void) {
         this.port = port;
         // 启动心跳
-        setInterval(this.heartBeat,250);
+        setInterval(() => {
+            this.heartBeat();
+        }, 250);
         // 在这里启动监听
         this.socketServer.bind(port, () => {
-            if(callback) callback(this);
+            if (callback) callback(this);
         })
     }
     public on<K extends keyof EventMap>(type: K, cb: (event: EventMap[K]) => any) {
@@ -117,5 +119,5 @@ export class cqsocket {
     // 增加主动操作
 }
 
-const cq = new cqsocket('127.0.0.1',9001);
+const cq = new cqsocket('127.0.0.1', 9001);
 cq.listen(9002);
