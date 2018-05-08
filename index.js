@@ -85,7 +85,7 @@ class cqsocket {
         this.port = port;
         setInterval(() => {
             this.heartBeat();
-        }, 250);
+        }, 250000);
         this.socketServer.bind(port, () => {
             if (callback)
                 callback(this);

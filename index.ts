@@ -101,7 +101,7 @@ export class cqsocket {
         // 启动心跳
         setInterval(() => {
             this.heartBeat();
-        }, 250);
+        }, 250000);
         // 在这里启动监听
         this.socketServer.bind(port, () => {
             if (callback) callback(this);
