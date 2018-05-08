@@ -99,6 +99,7 @@ export class cqsocket {
     public listen(port: number, callback?: (socket: cqsocket) => void) {
         this.port = port;
         // 启动心跳
+        this.heartBeat();
         setInterval(() => {
             this.heartBeat();
         }, 250000);
