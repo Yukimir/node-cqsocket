@@ -83,14 +83,14 @@ class cqsocket {
     }
     listen(port, callback) {
         this.port = port;
-        this.heartBeat();
-        setInterval(() => {
-            this.heartBeat();
-        }, 250000);
         this.socketServer.bind(port, () => {
             if (callback)
                 callback(this);
         });
+        this.heartBeat();
+        setInterval(() => {
+            this.heartBeat();
+        }, 250000);
     }
     on(type, cb) {
         this.eventStore.get(type).push(cb);

@@ -98,15 +98,15 @@ export class cqsocket {
     }
     public listen(port: number, callback?: (socket: cqsocket) => void) {
         this.port = port;
+        // 在这里启动监听
+        this.socketServer.bind(port, () => {
+            if (callback) callback(this);
+        })
         // 启动心跳
         this.heartBeat();
         setInterval(() => {
             this.heartBeat();
         }, 250000);
-        // 在这里启动监听
-        this.socketServer.bind(port, () => {
-            if (callback) callback(this);
-        })
     }
     public on<K extends keyof EventMap>(type: K, cb: (event: EventMap[K]) => any) {
         this.eventStore.get(type).push(cb);
