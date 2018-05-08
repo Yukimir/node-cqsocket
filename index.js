@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const dgram = require("dgram");
 const iconv = require("iconv-lite");
+function decodeText(text) {
+    return iconv.decode(new Buffer(text, 'base64'), 'gb18030');
+}
 class ServerHelloEvent {
     constructor() {
         this.clientTimeOut = 0;
@@ -10,39 +13,54 @@ class ServerHelloEvent {
         this.frameSize = 0;
     }
     static Create(payload) {
+        return {};
     }
 }
 class PrivateMessageEvent {
     static Create(payload) {
+        const r = new PrivateMessageEvent();
+        r.qq = parseInt(payload[1]);
+        r.message = decodeText(payload[2]);
+        return r;
     }
 }
 class GroupMessageEvent {
     static Create(payload) {
+        const r = new GroupMessageEvent();
+        r.ID = parseInt(payload[1]);
+        r.qq = parseInt(payload[2]);
+        r.message = decodeText(payload[3]);
+        return r;
     }
 }
 class GroupMemberChangeEvent {
     static Create(payload) {
+        const r = new GroupMemberChangeEvent();
+        r.ID = parseInt(payload[1]);
+        r.qq = parseInt(payload[2]);
+        r.operatedQQ = parseInt(payload[3]);
+        return r;
     }
 }
 class EventMap {
     constructor() {
-        this['server-hello'] = null;
-        this['private-message'] = null;
-        this['group-message'] = null;
-        this['discuss-message'] = null;
-        this['group-member-decrease'] = null;
-        this['group-member-increase'] = null;
+        this['ServerHello'] = null;
+        this['PrivateMessage'] = null;
+        this['GroupMessage'] = null;
+        this['DiscussMessage'] = null;
+        this['GroupMemberDecrease'] = null;
+        this['GroupMemberIncrease'] = null;
         this['error'] = null;
     }
 }
-const PrefixList = {
-    'ServerHello': ServerHelloEvent.Create,
-    'PrivateMessage': PrivateMessageEvent.Create,
-    'GroupMessage': GroupMessageEvent.Create,
-    'DiscussMessage': GroupMessageEvent.Create,
-    'GroupMemberDecrease': GroupMemberChangeEvent.Create,
-    'GroupMemberIncrease': GroupMemberChangeEvent.Create
-};
+const PrefixList = new Map([
+    ['ServerHello', ServerHelloEvent.Create],
+    ['PrivateMessage', PrivateMessageEvent.Create],
+    ['GroupMessage', GroupMessageEvent.Create],
+    ['DiscussMessage', GroupMessageEvent.Create],
+    ['GroupMemberDecrease', GroupMemberChangeEvent.Create],
+    ['GroupMemberIncrease', GroupMemberChangeEvent.Create]
+]);
 class cqsocket {
     constructor(host, port) {
         this.eventStore = new Map();
@@ -53,7 +71,11 @@ class cqsocket {
             this.eventStore.set(key, []);
         }
         this.socketServer.on('message', (msg, rinfo) => {
-            console.log(msg);
+            const s = msg.toString('utf-8');
+            const args = s.split(' ');
+            const factory = PrefixList.get(args[0]);
+            if (factory)
+                this.dispatch(args[0], factory(args));
         });
         this.socketServer.on('error', (err) => {
             this.dispatch('error', err);
@@ -70,12 +92,11 @@ class cqsocket {
         for (let key in payload) {
             const v = payload[key];
             if (typeof v === 'string') {
-                const gbk = iconv.encode(v, 'gbk18030');
+                const gbk = iconv.encode(v, 'gb18030');
                 payload[key] = gbk.toString('base64');
             }
         }
         const message = type + ' ' + this.genPayLoad(payload);
-        console.log(message);
         this.socketServer.send(message, this.hostPort, this.host);
     }
     heartBeat() {
@@ -97,12 +118,28 @@ class cqsocket {
     }
     dispatch(type, event) {
         const list = this.eventStore.get(type);
-        for (const fn of list) {
-            fn(event);
+        if (list) {
+            for (const fn of list) {
+                fn(event);
+            }
         }
+    }
+    SendPrivateMessage(qq, message) {
+        this.sendMessage('PrivateMessage', qq, message);
+    }
+    SendGroupMessage(id, message) {
+        this.sendMessage('GroupMessage', id, message);
+    }
+    SendDiscussMessage(id, message) {
+        this.sendMessage('DiscussMessage', id, message);
     }
 }
 exports.cqsocket = cqsocket;
 const cq = new cqsocket('127.0.0.1', 9001);
 cq.listen(9002);
+cq.on('GroupMessage', (event) => {
+    if (event.ID === 630035378) {
+        cq.SendGroupMessage(event.ID, event.message);
+    }
+});
 //# sourceMappingURL=index.js.map
