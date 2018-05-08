@@ -138,6 +138,7 @@ exports.cqsocket = cqsocket;
 const cq = new cqsocket('127.0.0.1', 9001);
 cq.listen(9002);
 cq.on('GroupMessage', (event) => {
+    console.log(event);
     if (event.ID === 630035378) {
         cq.SendGroupMessage(event.ID, event.message);
     }
