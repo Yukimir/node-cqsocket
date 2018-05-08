@@ -5,7 +5,7 @@ function decodeText(text: string) {
     return iconv.decode(new Buffer(text, 'base64'), 'gb18030');
 }
 
-class ServerHelloEvent {
+export class ServerHelloEvent {
     clientTimeOut: number = 0;
     prefixSize: number = 0;
     payloadSize: number = 0;
@@ -14,7 +14,7 @@ class ServerHelloEvent {
         return {};
     }
 }
-class PrivateMessageEvent {
+export class PrivateMessageEvent {
     qq: number;
     message: string;
     static Create(payload: Array<string>) {
@@ -24,7 +24,7 @@ class PrivateMessageEvent {
         return r;
     }
 }
-class GroupMessageEvent {
+export class GroupMessageEvent {
     ID: number;
     qq: number;
     message: string;
@@ -36,7 +36,7 @@ class GroupMessageEvent {
         return r;
     }
 }
-class GroupMemberChangeEvent {
+export class GroupMemberChangeEvent {
     ID: number;
     qq: number;
     operatedQQ: number;
@@ -49,7 +49,7 @@ class GroupMemberChangeEvent {
     }
 }
 
-class EventMap {
+export class EventMap {
     'ServerHello': ServerHelloEvent = null;
     'PrivateMessage': PrivateMessageEvent = null;
     'GroupMessage': GroupMessageEvent = null;

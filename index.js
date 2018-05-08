@@ -16,6 +16,7 @@ class ServerHelloEvent {
         return {};
     }
 }
+exports.ServerHelloEvent = ServerHelloEvent;
 class PrivateMessageEvent {
     static Create(payload) {
         const r = new PrivateMessageEvent();
@@ -24,6 +25,7 @@ class PrivateMessageEvent {
         return r;
     }
 }
+exports.PrivateMessageEvent = PrivateMessageEvent;
 class GroupMessageEvent {
     static Create(payload) {
         const r = new GroupMessageEvent();
@@ -33,6 +35,7 @@ class GroupMessageEvent {
         return r;
     }
 }
+exports.GroupMessageEvent = GroupMessageEvent;
 class GroupMemberChangeEvent {
     static Create(payload) {
         const r = new GroupMemberChangeEvent();
@@ -42,6 +45,7 @@ class GroupMemberChangeEvent {
         return r;
     }
 }
+exports.GroupMemberChangeEvent = GroupMemberChangeEvent;
 class EventMap {
     constructor() {
         this['ServerHello'] = null;
@@ -53,6 +57,7 @@ class EventMap {
         this['error'] = null;
     }
 }
+exports.EventMap = EventMap;
 const PrefixList = new Map([
     ['ServerHello', ServerHelloEvent.Create],
     ['PrivateMessage', PrivateMessageEvent.Create],
