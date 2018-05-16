@@ -140,4 +140,9 @@ class cqsocket {
     }
 }
 exports.cqsocket = cqsocket;
+const cq = new cqsocket('127.0.0.1', 9001);
+cq.on('PrivateMessage', (event) => {
+    console.log(event);
+});
+cq.listen(9002);
 //# sourceMappingURL=index.js.map
